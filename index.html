@@ -1,1 +1,397 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Refugo SSP21 - Mooca</title>
 
+<style>
+  body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #fff159;
+    color: #333333;
+    text-align: center;
+    padding: 20px;
+  }
+
+  h1 {
+    color: #3483fa;
+    font-weight: bold;
+    letter-spacing: 1px;
+  }
+
+  textarea, input, button {
+    padding: 10px;
+    margin: 5px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    width: 80%;
+    font-size: 1rem;
+  }
+  textarea:focus, input:focus {
+    border-color: #3483fa;
+    outline: none;
+    box-shadow: 0 0 5px rgba(52,131,250,0.5);
+  }
+  textarea#listaIDs {
+    width: 40%;
+    min-width: 180px;
+    max-width: 400px;
+    display: block;
+    margin: 0 auto;
+  }
+  input#scanner {
+    width: 40%;
+    min-width: 180px;
+    max-width: 400px;
+  }
+
+  button {
+    background: #3483fa;
+    color: #fff159;
+    cursor: pointer;
+    width: auto;
+    min-width: unset;
+    max-width: unset;
+    padding-left: 18px;
+    padding-right: 18px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    font-weight: bold;
+    letter-spacing: 1px;
+    box-shadow: 0 2px 8px rgba(52,131,250,0.08);
+    transition: background 0.2s;
+  }
+  button:hover {
+    background: #2968c8;
+  }
+
+  .box {
+    background: #f5f5f5;
+    padding: 20px;
+    border-radius: 12px;
+    margin-top: 20px;
+    box-shadow: 0 2px 8px rgba(52,131,250,0.08);
+  }
+
+  .linha-paineis {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .coluna-banco {
+    flex: 1;
+    min-width: 320px;
+    max-width: 560px;
+  }
+
+  .coluna-historico {
+    flex: 1;
+    min-width: 280px;
+    max-width: 420px;
+    text-align: left;
+  }
+
+  #historicoLista {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 220px;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+  }
+
+  #historicoLista li {
+    background: #ffffff;
+    border: 1px solid #dbeafe;
+    border-radius: 8px;
+    padding: 8px 10px;
+    margin-bottom: 8px;
+    color: #1f2937;
+    font-weight: 600;
+  }
+
+  .historico-vazio {
+    color: #6b7280;
+    font-style: italic;
+  }
+
+  @media (max-width: 900px) {
+    .coluna-banco,
+    .coluna-historico {
+      min-width: 100%;
+      max-width: 100%;
+    }
+  }
+
+  .ok {
+    color: #3483fa;
+    font-weight: bold;
+  }
+  .erro {
+    color: #e60000;
+    font-weight: bold;
+  }
+  .status {
+    margin-top: 10px;
+    font-weight: bold;
+    color: #3483fa;
+  }
+  .encontrado { font-size: 24px; }
+</style>
+
+</head>
+<body>
+
+<h1>📦 Refugo SSP21 - Mooca</h1>
+
+
+<!-- BIPAGEM -->
+<div class="box">
+  <h3>📡 Bipagem Sequencial</h3>
+  <input type="text" id="scanner" placeholder="Escaneie ou digite o ID" autofocus>
+  <div id="resultado"></div>
+</div>
+
+<div class="linha-paineis">
+  <!-- BANCO DE DADOS -->
+  <div class="box coluna-banco">
+    <h3>📋 Banco de Dados</h3>
+    <textarea id="listaIDs" rows="5" placeholder="Ex:
+BIP001
+BIP002
+BIP003"></textarea>
+    <button onclick="salvarLista()">Salvar IDs</button>
+    <div id="statusBanco" class="status"></div>
+  </div>
+
+  <!-- HISTÓRICO -->
+  <div class="box coluna-historico">
+    <h3>🧾 Histórico de Retorno</h3>
+    <ul id="historicoLista"></ul>
+    <button type="button" onclick="limparHistorico()">Limpar Histórico</button>
+    <button type="button" onclick="copiarIdsHistorico()">Copiar IDs</button>
+  </div>
+</div>
+
+<script>
+
+function mostrarStatusBanco(mensagem, erro) {
+  const status = document.getElementById("statusBanco");
+  status.textContent = mensagem;
+  status.style.color = erro ? "#e60000" : "#3483fa";
+}
+
+function carregarHistorico() {
+  return JSON.parse(localStorage.getItem("historicoEncontrados")) || [];
+}
+
+function salvarHistorico(lista) {
+  localStorage.setItem("historicoEncontrados", JSON.stringify(lista));
+}
+
+function limparHistorico() {
+  localStorage.removeItem("historicoEncontrados");
+  renderizarHistorico();
+}
+
+function copiarIdsHistorico() {
+  const historico = carregarHistorico();
+
+  if (historico.length === 0) {
+    alert("Não há IDs no histórico para copiar.");
+    return;
+  }
+
+  const ids = historico
+    .map(item => item.split(" - ")[0])
+    .filter(id => id && id.trim() !== "");
+
+  const textoParaCopiar = ids.join("\n");
+
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(textoParaCopiar)
+      .then(() => {
+        alert("IDs copiados com sucesso!");
+      })
+      .catch(() => {
+        alert("Não foi possível copiar os IDs.");
+      });
+    return;
+  }
+
+  const areaTemporaria = document.createElement("textarea");
+  areaTemporaria.value = textoParaCopiar;
+  areaTemporaria.style.position = "fixed";
+  areaTemporaria.style.left = "-9999px";
+  document.body.appendChild(areaTemporaria);
+  areaTemporaria.focus();
+  areaTemporaria.select();
+
+  try {
+    document.execCommand("copy");
+    alert("IDs copiados com sucesso!");
+  } catch (erro) {
+    alert("Não foi possível copiar os IDs.");
+  }
+
+  document.body.removeChild(areaTemporaria);
+}
+
+function renderizarHistorico(autoRolar = false) {
+  const historico = carregarHistorico();
+  const ul = document.getElementById("historicoLista");
+
+  if (historico.length === 0) {
+    ul.innerHTML = '<li class="historico-vazio">Nenhum ID encontrado ainda.</li>';
+    return;
+  }
+
+  ul.innerHTML = historico
+    .map(item => `<li>${item}</li>`)
+    .join("");
+
+  if (autoRolar) {
+    ul.scrollTop = ul.scrollHeight;
+  }
+}
+
+function registrarEncontrado(codigo) {
+  const historico = carregarHistorico();
+  const horario = new Date().toLocaleTimeString("pt-BR");
+  historico.push(`${codigo} - ${horario}`);
+
+  salvarHistorico(historico);
+  renderizarHistorico(true);
+}
+
+// SALVAR LISTA DE IDS (tipo banco separado)
+function salvarLista() {
+  let texto = document.getElementById("listaIDs").value;
+
+  let lista = texto
+    .split("\n")
+    .map(id => id.trim())
+    .filter(id => id !== "");
+
+  localStorage.setItem("bancoIDs", JSON.stringify(lista));
+
+  mostrarStatusBanco("Banco de dados salvo!", false);
+
+  // Ocultar textarea
+  document.getElementById("listaIDs").style.display = "none";
+
+  // Travar textarea (já estava, mas manter)
+  document.getElementById("listaIDs").disabled = true;
+
+  // Mudar botão para limpar
+  let botao = document.querySelector("button[onclick='salvarLista()']");
+  botao.textContent = "Limpar Banco de Dados";
+  botao.setAttribute("onclick", "limparBanco()");
+}
+
+// LIMPAR BANCO DE DADOS
+function limparBanco() {
+  localStorage.setItem("bancoIDs", JSON.stringify([]));
+
+  // Limpar textarea
+  document.getElementById("listaIDs").value = "";
+
+  // Mostrar textarea
+  document.getElementById("listaIDs").style.display = "block";
+
+  // Destravar textarea
+  document.getElementById("listaIDs").disabled = false;
+
+  mostrarStatusBanco("Banco de dados limpo!", false);
+
+  // Voltar botão ao normal
+  let botao = document.querySelector("button[onclick='limparBanco()']");
+  botao.textContent = "Salvar IDs";
+  botao.setAttribute("onclick", "salvarLista()");
+}
+
+// FUNÇÃO PROCV (busca)
+function procv(valor, lista) {
+  return lista.includes(valor) ? valor : null;
+}
+
+// FUNÇÃO SEERRO
+function seErro(valor, retornoErro) {
+  return valor ? valor : retornoErro;
+}
+
+// BIPAGEM AUTOMÁTICA
+document.getElementById("scanner").addEventListener("keypress", function(e) {
+  if (e.key === "Enter") {
+
+    let input = e.target;
+    let codigo = input.value.trim();
+
+    let banco = JSON.parse(localStorage.getItem("bancoIDs")) || [];
+
+    let resultado = procv(codigo, banco);
+    let final = seErro(resultado, "❌ NÃO ENCONTRADO");
+
+    let div = document.getElementById("resultado");
+
+    if (resultado) {
+      // Tocar som de notificação
+      let audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      let oscillator = audioContext.createOscillator();
+      let gainNode = audioContext.createGain();
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+      oscillator.type = 'square';
+      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.2);
+
+      // Tela de check em 1440x900
+      let popup = window.open('', '_blank', 'width=1440,height=900');
+      if (popup) {
+        popup.document.write(`
+          <html>
+          <head>
+          <meta charset="UTF-8">
+          <style>
+          body {
+            margin: 0;
+            background: #16a34a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-size: 300px;
+            color: white;
+          }
+          </style>
+          </head>
+          <body>✅</body>
+          </html>
+        `);
+        setTimeout(() => {
+          popup.close();
+        }, 400);
+      }
+
+      registrarEncontrado(codigo);
+      div.innerHTML = `<p class="ok encontrado">✅ ${codigo} encontrado</p>`;
+    } else {
+      div.innerHTML = `<p class="erro">${final}</p>`;
+    }
+
+    // limpa campo pra próxima bipagem
+    input.value = "";
+  }
+});
+
+renderizarHistorico();
+</script>
+
+</body>
+</html>
