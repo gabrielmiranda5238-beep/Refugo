@@ -259,6 +259,24 @@ function renderizarHistorico(autoRolar = false) {
   }
 }
 
+function normalizarCodigo(valor) {
+  const texto = String(valor ?? "").trim();
+  const numeros = texto.match(/\d+/g) || [];
+
+  if (numeros.length === 0) {
+    return "";
+  }
+
+  const primeiroNumero = numeros[0];
+  const numeroCentral = numeros.find(numero => numero.length === 11) || primeiroNumero;
+
+  if (numeroCentral.length > 11) {
+    return numeroCentral.slice(0, 11);
+  }
+
+  return numeroCentral;
+}
+
 function registrarEncontrado(codigo) {
   const historico = carregarHistorico();
   const horario = new Date().toLocaleTimeString("pt-BR");
@@ -274,7 +292,7 @@ function salvarLista() {
 
   let lista = texto
     .split("\n")
-    .map(id => id.trim())
+    .map(id => normalizarCodigo(id))
     .filter(id => id !== "");
 
   localStorage.setItem("bancoIDs", JSON.stringify(lista));
@@ -316,7 +334,9 @@ function limparBanco() {
 
 // FUNÇÃO PROCV (busca)
 function procv(valor, lista) {
-  return lista.includes(valor) ? valor : null;
+  const codigoNormalizado = normalizarCodigo(valor);
+  const bancoNormalizado = lista.map(item => normalizarCodigo(item));
+  return bancoNormalizado.includes(codigoNormalizado) ? codigoNormalizado : null;
 }
 
 // FUNÇÃO SEERRO
@@ -329,7 +349,7 @@ document.getElementById("scanner").addEventListener("keypress", function(e) {
   if (e.key === "Enter") {
 
     let input = e.target;
-    let codigo = input.value.trim();
+    let codigo = normalizarCodigo(input.value);
 
     let banco = JSON.parse(localStorage.getItem("bancoIDs")) || [];
 
