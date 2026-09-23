@@ -5,113 +5,287 @@
 <title>Refugo SSP21 - Mooca</title>
 
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
+
+  :root {
+    --ink: #263238;
+    --muted: #667085;
+    --line: #e2e8f0;
+    --surface: rgba(255, 255, 255, 0.94);
+    --yellow: #ffe600;
+    --yellow-soft: #fff9c4;
+    --blue: #3483fa;
+    --blue-dark: #2968c8;
+    --blue-soft: #eaf2ff;
+    --navy: #1f2d5a;
+    --green: #059669;
+    --amber: #d97706;
+    --red: #dc2626;
+    --shadow: 0 20px 55px rgba(38, 50, 56, 0.12);
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
   body {
-    font-family: Arial, Helvetica, sans-serif;
-    background: #fff159;
-    color: #333333;
-    text-align: center;
-    padding: 20px;
+    min-height: 100vh;
+    margin: 0;
+    padding: 36px clamp(18px, 4vw, 64px) 48px;
+    background:
+      radial-gradient(circle at 8% 0%, rgba(255, 230, 0, 0.34), transparent 32%),
+      radial-gradient(circle at 100% 100%, rgba(52, 131, 250, 0.14), transparent 30%),
+      #f7f9fc;
+    color: var(--ink);
+    font-family: 'Manrope', Arial, Helvetica, sans-serif;
+    text-align: left;
   }
 
   h1 {
-    color: #3483fa;
-    font-weight: bold;
-    letter-spacing: 1px;
+    margin: 0;
+    color: var(--navy);
+    font-size: clamp(1.8rem, 3vw, 2.75rem);
+    font-weight: 800;
+    letter-spacing: -1px;
   }
 
   textarea, input, button {
-    padding: 10px;
-    margin: 5px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    width: 80%;
-    font-size: 1rem;
+    font: inherit;
   }
+
   textarea:focus, input:focus {
-    border-color: #3483fa;
+    border-color: var(--blue);
     outline: none;
-    box-shadow: 0 0 5px rgba(52,131,250,0.5);
+    box-shadow: 0 0 0 4px rgba(52, 131, 250, 0.16);
   }
+
   textarea#listaIDs {
-    width: 40%;
-    min-width: 180px;
-    max-width: 400px;
+    width: 100%;
+    min-height: 180px;
+    resize: vertical;
     display: block;
-    margin: 0 auto;
+    margin: 0;
+    padding: 15px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: #fbfcfe;
+    color: var(--ink);
+    font-size: 0.92rem;
+    line-height: 1.6;
   }
+
   input#scanner {
-    width: 40%;
-    min-width: 180px;
-    max-width: 400px;
+    width: min(100%, 720px);
+    height: 60px;
+    margin: 0;
+    padding: 0 20px;
+    border: 2px solid #f5d900;
+    border-radius: 14px;
+    background: #ffffff;
+    color: var(--ink);
+    font-size: 1.05rem;
+    box-shadow: 0 12px 28px rgba(52, 131, 250, 0.12);
   }
 
   button {
-    background: #3483fa;
-    color: #fff159;
+    min-height: 44px;
+    padding: 0 18px;
+    border: 0;
+    border-radius: 10px;
+    background: var(--blue);
+    color: #ffffff;
     cursor: pointer;
-    width: auto;
-    min-width: unset;
-    max-width: unset;
-    padding-left: 18px;
-    padding-right: 18px;
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    font-weight: bold;
-    letter-spacing: 1px;
-    box-shadow: 0 2px 8px rgba(52,131,250,0.08);
-    transition: background 0.2s;
+    font-size: 0.82rem;
+    font-weight: 800;
+    letter-spacing: 0.1px;
+    box-shadow: 0 8px 18px rgba(52, 131, 250, 0.2);
+    transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
   }
+
   button:hover {
-    background: #2968c8;
+    background: var(--blue-dark);
+    box-shadow: 0 11px 22px rgba(52, 131, 250, 0.28);
+    transform: translateY(-1px);
   }
 
   .box {
-    background: #f5f5f5;
-    padding: 20px;
-    border-radius: 12px;
-    margin-top: 20px;
-    box-shadow: 0 2px 8px rgba(52,131,250,0.08);
+    margin-top: 22px;
+    padding: clamp(20px, 3vw, 30px);
+    border: 1px solid rgba(255, 255, 255, 0.75);
+    border-radius: 20px;
+    background: var(--surface);
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(10px);
   }
 
   .linha-paineis {
-    display: flex;
-    gap: 20px;
-    align-items: flex-start;
-    justify-content: center;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(320px, 0.7fr);
+    gap: 22px;
+    align-items: stretch;
   }
 
   .coluna-banco {
-    flex: 1;
-    min-width: 320px;
-    max-width: 560px;
+    min-width: 0;
+    max-width: none;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(52, 131, 250, 0.32);
+    background:
+      linear-gradient(rgba(52, 131, 250, 0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(52, 131, 250, 0.035) 1px, transparent 1px),
+      #f8fbff;
+    background-size: 28px 28px;
+  }
+
+  .coluna-banco::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, var(--blue), var(--yellow), var(--blue));
+  }
+
+  .coluna-banco::after {
+    content: 'DATABASE / LIVE';
+    position: absolute;
+    top: 27px;
+    right: 28px;
+    color: var(--blue);
+    font-size: 0.64rem;
+    font-weight: 800;
+    letter-spacing: 1.4px;
+  }
+
+  .coluna-banco h3 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--navy);
+    font-size: 1.2rem;
+    letter-spacing: -0.4px;
+  }
+
+  .coluna-banco h3::before {
+    content: '◈';
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border: 1px solid rgba(52, 131, 250, 0.3);
+    border-radius: 10px;
+    background: var(--blue-soft);
+    color: var(--blue);
+    font-size: 1.1rem;
+    box-shadow: 0 0 18px rgba(52, 131, 250, 0.18);
+  }
+
+  .banco-subtitulo {
+    margin: -8px 0 18px 44px;
+    color: var(--muted);
+    font-size: 0.78rem;
+    line-height: 1.5;
+  }
   }
 
   .coluna-historico {
-    flex: 1;
-    min-width: 280px;
-    max-width: 420px;
-    text-align: left;
+    min-width: 0;
+    max-width: none;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .coluna-historico button {
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  body > h1 {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  body > h1::before {
+    content: 'MERCADO LIVRE · CENTRO DE CONTROLE';
+    display: block;
+    margin-bottom: 8px;
+    color: var(--blue);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+
+  body > h1::after {
+    content: 'Acompanhe a entrada, a localização e o saldo de IDs em tempo real.';
+    display: block;
+    margin-top: 10px;
+    color: var(--muted);
+    font-size: 0.92rem;
+    font-weight: 500;
+    letter-spacing: 0;
+  }
+
+  body > .box:first-of-type {
+    max-width: 1400px;
+    margin: 30px auto 0;
+    padding: clamp(24px, 4vw, 42px);
+    background: linear-gradient(135deg, #ffe600 0%, #ffd500 100%);
+    color: var(--navy);
+    box-shadow: 0 24px 50px rgba(245, 196, 0, 0.28);
+  }
+
+  body > .box:first-of-type h3 {
+    color: var(--navy);
+    text-align: center;
+  }
+
+  body > .box:first-of-type input#scanner {
+    display: block;
+    margin: 0 auto;
+  }
+
+  body > .box:first-of-type #resultado {
+    min-height: 30px;
+    margin-top: 14px;
+    text-align: center;
+  }
+
+  body > .linha-paineis {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  h3 {
+    margin: 0 0 18px;
+    color: var(--ink);
+    font-size: 1.05rem;
+    font-weight: 800;
+    letter-spacing: -0.2px;
   }
 
   #historicoLista {
     list-style: none;
     padding: 0;
-    margin: 0;
-    max-height: 220px;
+    margin: 0 0 8px;
+    min-height: 252px;
+    max-height: 360px;
     overflow-y: auto;
     scroll-behavior: smooth;
+    flex: 1;
   }
 
   #historicoLista li {
-    background: #ffffff;
-    border: 1px solid #dbeafe;
-    border-radius: 8px;
-    padding: 8px 10px;
-    margin-bottom: 8px;
-    color: #1f2937;
-    font-weight: 600;
+    margin-bottom: 9px;
+    padding: 13px 14px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: #fbfcfe;
+    color: var(--ink);
+    font-size: 0.83rem;
+    font-weight: 700;
   }
 
   .historico-vazio {
@@ -128,19 +302,79 @@
   }
 
   .ok {
-    color: #3483fa;
+    color: var(--navy);
     font-weight: bold;
   }
   .erro {
-    color: #e60000;
+    color: #b42318;
     font-weight: bold;
   }
   .status {
     margin-top: 10px;
     font-weight: bold;
-    color: #3483fa;
+    color: var(--blue);
   }
-  .encontrado { font-size: 24px; }
+  .resumo-banco {
+    width: 100%;
+    margin-top: 24px;
+    border-collapse: collapse;
+    border: 1px solid rgba(52, 131, 250, 0.24);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.84);
+    overflow: hidden;
+  }
+  .resumo-banco th,
+  .resumo-banco td {
+    padding: 13px 14px;
+    border-bottom: 1px solid rgba(52, 131, 250, 0.14);
+    text-align: left;
+  }
+  .resumo-banco th {
+    color: var(--navy);
+    font-size: 0.78rem;
+    font-weight: 700;
+  }
+  .resumo-banco td:last-child {
+    color: var(--blue);
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-align: right;
+    text-shadow: 0 0 12px rgba(52, 131, 250, 0.25);
+  }
+  .resumo-banco tr:last-child th,
+  .resumo-banco tr:last-child td {
+    border-bottom: 0;
+  }
+  .encontrado { font-size: 1.1rem; }
+
+  @media (max-width: 860px) {
+    body {
+      padding: 24px 14px 32px;
+    }
+
+    .linha-paineis {
+      grid-template-columns: 1fr;
+    }
+
+    #historicoLista {
+      min-height: 180px;
+    }
+  }
+
+  @media (max-width: 520px) {
+    body > .box:first-of-type {
+      margin-top: 22px;
+    }
+
+    textarea#listaIDs {
+      min-height: 140px;
+    }
+
+    .resumo-banco th,
+    .resumo-banco td {
+      padding: 11px 10px;
+    }
+  }
 </style>
 
 </head>
@@ -160,12 +394,21 @@
   <!-- BANCO DE DADOS -->
   <div class="box coluna-banco">
     <h3>📋 Banco de Dados</h3>
+    <p class="banco-subtitulo">Central de IDs cadastrados e monitoramento de localização.</p>
     <textarea id="listaIDs" rows="5" placeholder="Ex:
 BIP001
 BIP002
 BIP003"></textarea>
     <button onclick="salvarLista()">Salvar IDs</button>
     <div id="statusBanco" class="status"></div>
+    <table class="resumo-banco">
+      <tbody>
+        <tr><th scope="row">IDs salvos no banco</th><td id="totalSalvos">0</td></tr>
+        <tr><th scope="row">IDs bipados</th><td id="totalBipados">0</td></tr>
+        <tr><th scope="row">IDs localizados do banco</th><td id="totalLocalizados">0</td></tr>
+        <tr><th scope="row">IDs que faltam localizar</th><td id="totalFaltantes">0</td></tr>
+      </tbody>
+    </table>
   </div>
 
   <!-- HISTÓRICO -->
@@ -191,6 +434,25 @@ function carregarHistorico() {
 
 function salvarHistorico(lista) {
   localStorage.setItem("historicoEncontrados", JSON.stringify(lista));
+}
+
+function carregarListaSalva(chave) {
+  return JSON.parse(localStorage.getItem(chave)) || [];
+}
+
+function salvarListaUnica(chave, lista) {
+  localStorage.setItem(chave, JSON.stringify([...new Set(lista)]));
+}
+
+function renderizarResumoBanco() {
+  const banco = carregarListaSalva("bancoIDs").map(normalizarCodigo).filter(Boolean);
+  const bipados = carregarListaSalva("idsBipados");
+  const localizados = carregarListaSalva("idsLocalizados");
+
+  document.getElementById("totalSalvos").textContent = new Set(banco).size;
+  document.getElementById("totalBipados").textContent = bipados.length;
+  document.getElementById("totalLocalizados").textContent = localizados.filter(id => banco.includes(id)).length;
+  document.getElementById("totalFaltantes").textContent = Math.max(0, new Set(banco).size - localizados.filter(id => banco.includes(id)).length);
 }
 
 function limparHistorico() {
@@ -279,6 +541,36 @@ function registrarEncontrado(codigo) {
   renderizarHistorico(true);
 }
 
+function tocarSomConclusao(audioContext) {
+  if (!audioContext) return;
+
+  const inicio = audioContext.currentTime + 0.26;
+  const ganho = audioContext.createGain();
+  ganho.connect(audioContext.destination);
+  ganho.gain.setValueAtTime(0.0001, inicio);
+  ganho.gain.exponentialRampToValueAtTime(0.28, inicio + 0.03);
+  ganho.gain.exponentialRampToValueAtTime(0.0001, inicio + 1.2);
+
+  [523.25, 659.25, 783.99, 1046.5].forEach((frequencia, indice) => {
+    const oscilador = audioContext.createOscillator();
+    oscilador.type = "triangle";
+    oscilador.frequency.setValueAtTime(frequencia, inicio + indice * 0.16);
+    oscilador.connect(ganho);
+    oscilador.start(inicio + indice * 0.16);
+    oscilador.stop(inicio + 0.34 + indice * 0.16);
+  });
+}
+
+function verificarConclusaoBanco(audioContext) {
+  const banco = [...new Set(carregarListaSalva("bancoIDs").map(normalizarCodigo).filter(Boolean))];
+  const localizados = carregarListaSalva("idsLocalizados").filter(id => banco.includes(id));
+
+  if (banco.length > 0 && localizados.length === banco.length && !localStorage.getItem("somConclusaoTocadoV2")) {
+    localStorage.setItem("somConclusaoTocadoV2", "true");
+    tocarSomConclusao(audioContext);
+  }
+}
+
 // SALVAR LISTA DE IDS (tipo banco separado)
 function salvarLista() {
   let texto = document.getElementById("listaIDs").value;
@@ -289,8 +581,13 @@ function salvarLista() {
     .filter(id => id !== "");
 
   localStorage.setItem("bancoIDs", JSON.stringify(lista));
+  localStorage.removeItem("idsBipados");
+  localStorage.removeItem("idsLocalizados");
+  localStorage.removeItem("somConclusaoTocado");
+  localStorage.removeItem("somConclusaoTocadoV2");
 
   mostrarStatusBanco("Banco de dados salvo!", false);
+  renderizarResumoBanco();
 
   // Ocultar textarea
   document.getElementById("listaIDs").style.display = "none";
@@ -307,6 +604,10 @@ function salvarLista() {
 // LIMPAR BANCO DE DADOS
 function limparBanco() {
   localStorage.setItem("bancoIDs", JSON.stringify([]));
+  localStorage.removeItem("idsBipados");
+  localStorage.removeItem("idsLocalizados");
+  localStorage.removeItem("somConclusaoTocado");
+  localStorage.removeItem("somConclusaoTocadoV2");
 
   // Limpar textarea
   document.getElementById("listaIDs").value = "";
@@ -323,6 +624,7 @@ function limparBanco() {
   let botao = document.querySelector("button[onclick='limparBanco()']");
   botao.textContent = "Salvar IDs";
   botao.setAttribute("onclick", "salvarLista()");
+  renderizarResumoBanco();
 }
 
 // FUNÇÃO PROCV (busca)
@@ -343,6 +645,11 @@ document.getElementById("scanner").addEventListener("keypress", function(e) {
 
     let input = e.target;
     let codigo = normalizarCodigo(input.value);
+
+    if (codigo) {
+      const bipados = carregarListaSalva("idsBipados");
+      salvarListaUnica("idsBipados", [...bipados, codigo]);
+    }
 
     let banco = JSON.parse(localStorage.getItem("bancoIDs")) || [];
 
@@ -393,6 +700,9 @@ document.getElementById("scanner").addEventListener("keypress", function(e) {
       }
 
       registrarEncontrado(codigo);
+      const localizados = carregarListaSalva("idsLocalizados");
+      salvarListaUnica("idsLocalizados", [...localizados, codigo]);
+      verificarConclusaoBanco(audioContext);
       div.innerHTML = `<p class="ok encontrado">✅ ${codigo} encontrado</p>`;
     } else {
       div.innerHTML = `<p class="erro">${final}</p>`;
@@ -400,10 +710,12 @@ document.getElementById("scanner").addEventListener("keypress", function(e) {
 
     // limpa campo pra próxima bipagem
     input.value = "";
+    renderizarResumoBanco();
   }
 });
 
 renderizarHistorico();
+renderizarResumoBanco();
 </script>
 
 </body>
